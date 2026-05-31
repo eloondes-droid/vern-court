@@ -851,13 +851,40 @@ input[type="text"]:focus { border-color: var(--orange); }
 ::-webkit-scrollbar-track { background: var(--dark); }
 ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE IPHONE ── */
 @media (max-width: 600px) {
   .setup-grid { grid-template-columns: 1fr; }
   .players-grid { grid-template-columns: repeat(3, 1fr); }
-  .answers-grid { grid-template-columns: 1fr; }
   .end-stats { grid-template-columns: 1fr 1fr; }
   .weak-verb-item { grid-template-columns: 1fr 1fr; }
+
+  .quiz-topbar { padding: 6px 10px; gap: 8px; }
+  .quiz-player-avatar { width: 28px; height: 28px; font-size: 13px; }
+  .quiz-player-name { font-size: 15px; }
+  .timer-display { font-size: 13px; }
+  .stat-label { font-size: 9px; }
+  .stat-value { font-size: 16px; }
+  .quiz-stats { gap: 8px; }
+  .progress-bar-wrap { top: 50px; }
+
+  .quiz-main { margin-top: 60px; padding: 10px 12px; gap: 10px; }
+
+  .question-card { padding: 14px 16px; }
+  .question-verb { font-size: clamp(28px, 9vw, 48px); margin-bottom: 4px; }
+  .question-type-badge { font-size: 10px; margin-bottom: 6px; }
+  .question-hint { font-size: 12px; }
+
+  .answers-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .answer-btn { padding: 12px 8px; font-size: 15px; border-radius: 10px; }
+
+  .feedback-banner { font-size: 18px; padding: 10px 14px; }
+
+  .fill-blanks { gap: 8px; }
+  .fill-input { padding: 8px 10px; font-size: 16px; }
+  .fill-label { font-size: 10px; }
+
+  .btn-primary { font-size: 18px; padding: 12px 24px; }
+  .quiz-actions { margin-top: 6px; }
 }
 
 /* Difficulty legend */
