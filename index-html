@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏀 VERB COURT — Quiz Verbes Irréguliers</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #F76C00;
+  --orange-light: #FF9A3C;
+  --orange-dark: #C45200;
+  --black: #0D0D0D;
+  --dark: #1A1A1A;
+  --dark2: #242424;
+  --dark3: #2E2E2E;
+  --white: #F5F0E8;
+  --cream: #E8DFC8;
+  --gray: #888;
+  --green: #4CAF50;
+  --red: #E53935;
+  --yellow: #FFD600;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── COURT BACKGROUND ── */
+.court-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: #1a0f00;
+  overflow: hidden;
+}
+.court-floor {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, #8B5E1A 0%, #A06C20 40%, #8B5E1A 100%);
+}
+.court-line {
+  position: absolute;
+  background: rgba(255,255,255,0.15);
+}
+.court-center {
+  position: absolute;
+  bottom: 20%; left: 50%;
+  transform: translateX(-50%);
+  width: 200px; height: 100px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+}
+.court-3pt {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 420px; height: 230px;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 210px 210px 0 0;
+}
+.court-paint {
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 130px; height: 130px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-top: none;
+}
+.court-paint-arc {
+  position: absolute;
+  bottom: 128px; left: 50%;
+  transform: translateX(-50%);
+  width: 130px; height: 65px;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 0 0 65px 65px;
+  border-top: none;
+}
+.ceiling-lights {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(247,108,0,0.08) 0%, transparent 70%);
+}
+
+/* ── HOOP ── */
+.hoop-container {
+  position: absolute;
+  top: 8%; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+.backboard {
+  width: 120px; height: 70px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(220,220,220,0.8));
+  border: 3px solid #ccc;
+  border-radius: 4px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+.backboard::after {
+  content: '';
+  position: absolute;
+  top: 15px; left: 20px; right: 20px; bottom: 10px;
+  border: 2px solid rgba(255, 80, 0, 0.6);
+  border-radius: 2px;
+}
+.hoop-arm {
+  width: 6px; height: 18px;
+  background: #888;
+}
+.hoop {
+  width: 70px; height: 14px;
+  border: 5px solid var(--orange);
+  border-radius: 50%;
+  background: transparent;
+  position: relative;
+  box-shadow: 0 0 15px rgba(247,108,0,0.5);
+}
+.net {
+  width: 56px;
+  margin: 0 auto;
+  position: relative;
+}
+.net svg { width: 100%; }
+
+/* ── BALL ANIMATION ── */
+.ball {
+  position: fixed;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--orange-light), var(--orange-dark));
+  z-index: 999;
+  pointer-events: none;
+  display: none;
+  box-shadow: inset -3px -3px 8px rgba(0,0,0,0.4);
+}
+.ball::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  border-top: 2px solid rgba(0,0,0,0.3);
+  border-bottom: 2px solid rgba(0,0,0,0.3);
+}
+@keyframes ballShoot {
+  0% { transform: translate(0,0) scale(1); opacity:1; }
+  40% { transform: translate(-30px,-180px) scale(0.7); opacity:1; }
+  70% { transform: translate(10px,-220px) scale(0.6); opacity:1; }
+  85% { transform: translate(5px,-200px) scale(0.65); opacity:1; }
+  100% { transform: translate(0px,-160px) scale(0.6); opacity:0; }
+}
+@keyframes ballMiss {
+  0% { transform: translate(0,0) scale(1); opacity:1; }
+  40% { transform: translate(80px,-120px) scale(0.8); opacity:1; }
+  100% { transform: translate(120px,100px) scale(0.6); opacity:0; }
+}
+.ball.shoot { display:block; animation: ballShoot 0.9s ease-out forwards; }
+.ball.miss { display:block; animation: ballMiss 0.7s ease-in forwards; }
+
+/* ── SCREENS ── */
+.screen {
+  display: none;
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+}
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* ── HEADER ── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(13,13,13,0.95) 0%, transparent 100%);
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: var(--orange);
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px rgba(247,108,0,0.5);
+}
+.logo span { color: var(--white); }
+
+/* ── WELCOME SCREEN ── */
+#screen-welcome {
+  padding: 80px 20px 40px;
+  gap: 32px;
+}
+.welcome-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 0.9;
+  text-align: center;
+  color: var(--orange);
+  text-shadow: 4px 4px 0 rgba(0,0,0,0.5), 0 0 40px rgba(247,108,0,0.3);
+}
+.welcome-title span { color: var(--white); display: block; font-size: 0.55em; }
+.welcome-subtitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  color: var(--gray);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ── PLAYERS GRID ── */
+.players-section {
+  width: 100%;
+  max-width: 700px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  color: var(--orange);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.player-card {
+  background: var(--dark2);
+  border: 2px solid var(--dark3);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.player-card:hover { border-color: var(--orange); transform: translateY(-2px); }
+.player-card.selected { border-color: var(--orange); background: rgba(247,108,0,0.1); }
+.player-card.active-player { border-color: var(--orange); background: rgba(247,108,0,0.15); box-shadow: 0 0 20px rgba(247,108,0,0.3); }
+.player-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+}
+.player-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.player-score-display {
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 3px;
+}
+.player-best {
+  font-size: 11px;
+  color: var(--orange);
+  font-weight: 600;
+}
+.add-player-btn {
+  background: var(--dark2);
+  border: 2px dashed var(--dark3);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--gray);
+  font-size: 22px;
+}
+.add-player-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+/* ── ADD PLAYER FORM ── */
+.add-player-form {
+  background: var(--dark2);
+  border: 2px solid var(--dark3);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  max-width: 700px;
+  width: 100%;
+}
+.form-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.color-options {
+  display: flex;
+  gap: 8px;
+}
+.color-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: transform 0.2s;
+}
+.color-dot:hover, .color-dot.selected { border-color: white; transform: scale(1.2); }
+
+input[type="text"] {
+  background: var(--dark3);
+  border: 2px solid #444;
+  border-radius: 8px;
+  color: var(--white);
+  padding: 8px 14px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  outline: none;
+  flex: 1;
+}
+input[type="text"]:focus { border-color: var(--orange); }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btn-primary {
+  background: var(--orange);
+  color: white;
+  padding: 14px 32px;
+  font-size: 22px;
+  box-shadow: 0 4px 0 var(--orange-dark), 0 0 20px rgba(247,108,0,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--orange-dark), 0 0 30px rgba(247,108,0,0.4); }
+.btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--orange-dark); }
+.btn-secondary {
+  background: var(--dark2);
+  color: var(--white);
+  padding: 10px 20px;
+  font-size: 16px;
+  border: 2px solid var(--dark3);
+}
+.btn-secondary:hover { border-color: var(--orange); color: var(--orange); }
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+.btn-danger { background: var(--red); color: white; }
+.btn-success { background: var(--green); color: white; }
+
+/* ── SETUP SCREEN ── */
+#screen-setup {
+  padding: 80px 20px 40px;
+  gap: 24px;
+  align-items: flex-start;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.setup-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+}
+.setup-card {
+  background: var(--dark2);
+  border: 2px solid var(--dark3);
+  border-radius: 16px;
+  padding: 20px;
+}
+.setup-card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: var(--orange);
+  margin-bottom: 14px;
+}
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.option-btn {
+  background: var(--dark3);
+  border: 2px solid #444;
+  border-radius: 8px;
+  color: var(--white);
+  padding: 10px 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.option-btn:hover { border-color: var(--orange); }
+.option-btn.selected { border-color: var(--orange); background: rgba(247,108,0,0.15); color: var(--orange); }
+
+/* Verb selector */
+.verb-selector-wrap {
+  grid-column: 1 / -1;
+}
+.verb-search {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.verb-grid {
+  max-height: 280px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 6px;
+  padding-right: 4px;
+}
+.verb-grid::-webkit-scrollbar { width: 4px; }
+.verb-grid::-webkit-scrollbar-track { background: var(--dark3); }
+.verb-grid::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 2px; }
+.verb-chip {
+  background: var(--dark3);
+  border: 2px solid #444;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.verb-chip:hover { border-color: var(--orange); }
+.verb-chip.selected { border-color: var(--orange); background: rgba(247,108,0,0.15); }
+.verb-chip .level-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.verb-chip .level-dot.easy { background: var(--green); }
+.verb-chip .level-dot.medium { background: var(--yellow); }
+.verb-chip .level-dot.hard { background: var(--red); }
+.verb-chip .verb-en { font-weight: 700; color: var(--white); font-size: 14px; }
+.verb-chip .verb-fr { color: var(--gray); font-size: 11px; }
+
+.verb-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.selected-count {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  color: var(--orange);
+  margin-top: 8px;
+  text-align: right;
+}
+
+/* ── QUIZ SCREEN ── */
+#screen-quiz {
+  padding: 0;
+  justify-content: flex-start;
+}
+.quiz-topbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(13,13,13,0.95);
+  backdrop-filter: blur(10px);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 2px solid var(--dark3);
+}
+.quiz-player-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.quiz-player-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  color: white;
+}
+.quiz-player-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+.quiz-stats {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+  align-items: center;
+}
+.stat-box {
+  text-align: center;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--gray);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--orange);
+}
+.progress-bar-wrap {
+  position: fixed; top: 62px; left: 0; right: 0;
+  z-index: 100;
+  height: 4px;
+  background: var(--dark3);
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--orange-light));
+  transition: width 0.4s ease;
+}
+
+.quiz-main {
+  margin-top: 80px;
+  width: 100%;
+  max-width: 700px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.question-counter {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+.question-card {
+  background: var(--dark2);
+  border: 2px solid var(--dark3);
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  text-align: center;
+}
+.question-type-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--gray);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.question-verb {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(40px, 8vw, 72px);
+  color: var(--orange);
+  line-height: 1;
+  margin-bottom: 8px;
+  text-shadow: 0 0 30px rgba(247,108,0,0.3);
+}
+.question-hint {
+  font-size: 14px;
+  color: var(--gray);
+  font-style: italic;
+}
+
+/* Selection answers */
+.answers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+.answer-btn {
+  background: var(--dark2);
+  border: 2px solid var(--dark3);
+  border-radius: 12px;
+  padding: 18px 14px;
+  color: var(--white);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.answer-btn:hover:not(:disabled) { border-color: var(--orange); background: rgba(247,108,0,0.1); transform: translateY(-2px); }
+.answer-btn.correct { border-color: var(--green); background: rgba(76,175,80,0.2); color: var(--green); }
+.answer-btn.wrong { border-color: var(--red); background: rgba(229,57,53,0.2); color: var(--red); }
+.answer-btn:disabled { cursor: default; }
+
+/* Fill blanks */
+.fill-blanks {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.fill-field {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fill-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+.fill-input {
+  background: var(--dark3);
+  border: 2px solid #444;
+  border-radius: 10px;
+  color: var(--white);
+  padding: 12px 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  outline: none;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+.fill-input:focus { border-color: var(--orange); }
+.fill-input.correct { border-color: var(--green); background: rgba(76,175,80,0.1); }
+.fill-input.wrong { border-color: var(--red); background: rgba(229,57,53,0.1); }
+.fill-correct-answer {
+  font-size: 12px;
+  color: var(--green);
+  text-align: center;
+  font-style: italic;
+  min-height: 16px;
+}
+
+.quiz-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Feedback */
+.feedback-banner {
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 3px;
+  text-align: center;
+  display: none;
+}
+.feedback-banner.correct { background: rgba(76,175,80,0.2); border: 2px solid var(--green); color: var(--green); }
+.feedback-banner.wrong { background: rgba(229,57,53,0.2); border: 2px solid var(--red); color: var(--red); }
+.feedback-banner.show { display: block; }
+
+/* Timer */
+.timer-display {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--gray);
+}
+
+/* ── END SCREEN ── */
+#screen-end {
+  padding: 80px 20px 40px;
+  gap: 28px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.end-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 6vw, 64px);
+  color: var(--orange);
+  text-align: center;
+  letter-spacing: 4px;
+}
+.score-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 12vw, 100px);
+  color: var(--white);
+  line-height: 1;
+  text-align: center;
+}
+.score-big span { color: var(--orange); }
+.end-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+.end-stat {
+  background: var(--dark2);
+  border: 2px solid var(--dark3);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.end-stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: var(--orange);
+}
+.end-stat-label {
+  font-size: 11px;
+  color: var(--gray);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.weak-verbs-section {
+  width: 100%;
+}
+.weak-verbs-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--red);
+  margin-bottom: 12px;
+}
+.weak-verb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.weak-verb-item {
+  background: var(--dark2);
+  border: 2px solid rgba(229,57,53,0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.weak-verb-item .en { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; color: var(--white); }
+.weak-verb-item .fr { font-size: 13px; color: var(--gray); }
+.weak-verb-item .times { font-size: 12px; color: var(--red); font-weight: 600; }
+
+.end-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── SCOREBOARD ── */
+.scoreboard {
+  width: 100%;
+  max-width: 700px;
+}
+.scoreboard-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--dark2);
+  border: 2px solid var(--dark3);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+.rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  color: var(--gray);
+  width: 24px;
+  text-align: center;
+}
+.rank.gold { color: #FFD600; }
+.rank.silver { color: #B0BEC5; }
+.rank.bronze { color: #A1632A; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  top: 80px; left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--dark2);
+  border: 2px solid var(--orange);
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--orange);
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--dark2);
+  border: 2px solid var(--orange);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: var(--orange);
+  margin-bottom: 16px;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .setup-grid { grid-template-columns: 1fr; }
+  .players-grid { grid-template-columns: repeat(3, 1fr); }
+  .answers-grid { grid-template-columns: 1fr; }
+  .end-stats { grid-template-columns: 1fr 1fr; }
+  .weak-verb-item { grid-template-columns: 1fr 1fr; }
+}
+
+/* Difficulty legend */
+.legend {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--gray);
+  align-items: center;
+  margin-bottom: 6px;
+}
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<!-- Court Background -->
+<div class="court-bg">
+  <div class="ceiling-lights"></div>
+  <div class="court-floor">
+    <div class="court-line" style="position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);background:rgba(255,255,255,0.12)"></div>
+    <div class="court-center"></div>
+    <div class="court-3pt"></div>
+    <div class="court-paint"></div>
+    <div class="court-paint-arc"></div>
+  </div>
+</div>
+
+<!-- Hoop -->
+<div class="hoop-container" id="hoopEl">
+  <div class="backboard"></div>
+  <div class="hoop-arm"></div>
+  <div class="hoop"></div>
+  <div class="net">
+    <svg viewBox="0 0 56 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="0" x2="8" y2="40" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <line x1="14" y1="0" x2="16" y2="40" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <line x1="28" y1="0" x2="28" y2="40" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <line x1="42" y1="0" x2="40" y2="40" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <line x1="56" y1="0" x2="48" y2="40" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <line x1="0" y1="10" x2="56" y2="10" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+      <line x1="2" y1="22" x2="54" y2="22" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="5" y1="34" x2="51" y2="34" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    </svg>
+  </div>
+</div>
+
+<!-- Ball -->
+<div class="ball" id="ball"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-content" style="margin-bottom:20px;color:var(--gray);font-size:14px;line-height:1.6"></div>
+    <div style="display:flex;gap:10px;justify-content:center" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- ════════════════ SCREEN: WELCOME ════════════════ -->
+<div class="screen active" id="screen-welcome">
+  <div class="site-header">
+    <div class="logo">Verb<span>Court</span></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;color:var(--gray)">🏀 QUIZ ANGLAIS</div>
+  </div>
+
+  <div class="welcome-title">
+    VERB<br><span>COURT</span>
+  </div>
+  <div class="welcome-subtitle">Quiz · Verbes Irréguliers · Anglais</div>
+
+  <!-- Players -->
+  <div class="players-section">
+    <div class="section-title">👥 JOUEURS</div>
+    <div class="players-grid" id="players-grid"></div>
+    <div id="add-player-form" class="add-player-form" style="display:none">
+      <div class="form-row">
+        <input type="text" id="new-player-name" placeholder="Prénom..." maxlength="12" style="max-width:180px">
+        <div class="color-options" id="color-options"></div>
+        <button class="btn btn-primary btn-sm" onclick="saveNewPlayer()">OK</button>
+        <button class="btn btn-secondary btn-sm" onclick="cancelAddPlayer()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active player -->
+  <div id="player-select-hint" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;color:var(--gray);text-transform:uppercase;display:none">
+    Clique sur un joueur pour jouer
+  </div>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <button class="btn btn-primary" onclick="goToSetup()" id="btn-play" style="opacity:0.4;pointer-events:none">🏀 JOUER</button>
+    <button class="btn btn-secondary" onclick="showScoreboard()">🏆 CLASSEMENT</button>
+  </div>
+</div>
+
+<!-- ════════════════ SCREEN: SETUP ════════════════ -->
+<div class="screen" id="screen-setup">
+  <div class="site-header">
+    <div class="logo">Verb<span>Court</span></div>
+    <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-welcome')">← Retour</button>
+  </div>
+
+  <div style="width:100%;max-width:900px;padding:80px 20px 40px">
+    <div class="section-title" style="text-align:left;margin-bottom:20px">⚙️ CONFIGURATION DE LA PARTIE</div>
+
+    <div class="setup-grid">
+      <!-- Type -->
+      <div class="setup-card">
+        <div class="setup-card-title">TYPE DE QUIZ</div>
+        <div class="option-group">
+          <button class="option-btn selected" data-group="type" data-val="selection" onclick="selectOption(this)">
+            🔘 Sélection — Choisir la bonne réponse
+          </button>
+          <button class="option-btn" data-group="type" data-val="fill" onclick="selectOption(this)">
+            ✏️ À trous — Écrire les formes
+          </button>
+        </div>
+      </div>
+
+      <!-- Direction (only for selection) -->
+      <div class="setup-card" id="direction-card">
+        <div class="setup-card-title">DIRECTION</div>
+        <div class="option-group">
+          <button class="option-btn selected" data-group="direction" data-val="en-fr" onclick="selectOption(this)">
+            🇬🇧 → 🇫🇷 Anglais → Français
+          </button>
+          <button class="option-btn" data-group="direction" data-val="fr-en" onclick="selectOption(this)">
+            🇫🇷 → 🇬🇧 Français → Anglais
+          </button>
+          <button class="option-btn" data-group="direction" data-val="both" onclick="selectOption(this)">
+            🔀 Mixte (aléatoire)
+          </button>
+        </div>
+      </div>
+
+      <!-- Count -->
+      <div class="setup-card">
+        <div class="setup-card-title">NOMBRE DE VERBES</div>
+        <div class="option-group">
+          <button class="option-btn" data-group="count" data-val="10" onclick="selectOption(this)">10 verbes</button>
+          <button class="option-btn selected" data-group="count" data-val="15" onclick="selectOption(this)">15 verbes</button>
+          <button class="option-btn" data-group="count" data-val="20" onclick="selectOption(this)">20 verbes</button>
+          <button class="option-btn" data-group="count" data-val="50" onclick="selectOption(this)">50 verbes</button>
+        </div>
+      </div>
+
+      <!-- Selection mode -->
+      <div class="setup-card">
+        <div class="setup-card-title">SÉLECTION DES VERBES</div>
+        <div class="option-group">
+          <button class="option-btn selected" data-group="verbmode" data-val="my" onclick="selectOption(this)">⭐ Mes verbes sélectionnés</button>
+          <button class="option-btn" data-group="verbmode" data-val="school-easy" onclick="selectOption(this)">🟢 Collège (niveau facile)</button>
+          <button class="option-btn" data-group="verbmode" data-val="school-med" onclick="selectOption(this)">🟡 Lycée (niveau moyen)</button>
+          <button class="option-btn" data-group="verbmode" data-val="weak" onclick="selectOption(this)">🔴 Verbes à retravailler</button>
+          <button class="option-btn" data-group="verbmode" data-val="random" onclick="selectOption(this)">🎲 Aléatoire (tous)</button>
+        </div>
+      </div>
+
+      <!-- Verb Selector -->
+      <div class="setup-card verb-selector-wrap" id="verb-selector-card">
+        <div class="setup-card-title">MES VERBES</div>
+        <div class="legend">
+          <div class="legend-item"><div class="dot" style="background:var(--green)"></div> Facile</div>
+          <div class="legend-item"><div class="dot" style="background:var(--yellow)"></div> Moyen</div>
+          <div class="legend-item"><div class="dot" style="background:var(--red)"></div> Difficile</div>
+        </div>
+        <input type="text" class="verb-search" id="verb-search" placeholder="🔍 Rechercher un verbe..." oninput="filterVerbs()">
+        <div class="verb-controls">
+          <button class="btn btn-secondary btn-sm" onclick="selectAllVerbs()">Tout sélectionner</button>
+          <button class="btn btn-secondary btn-sm" onclick="deselectAllVerbs()">Tout déselectionner</button>
+          <button class="btn btn-secondary btn-sm" onclick="selectByLevel('easy')">🟢 Faciles</button>
+          <button class="btn btn-secondary btn-sm" onclick="selectByLevel('medium')">🟡 Moyens</button>
+        </div>
+        <div class="verb-grid" id="verb-grid"></div>
+        <div class="selected-count" id="selected-count">0 verbe(s) sélectionné(s)</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:24px;display:flex;gap:12px;justify-content:center">
+      <button class="btn btn-primary" onclick="startQuiz()">🏀 DÉMARRER LE QUIZ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ SCREEN: QUIZ ════════════════ -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-topbar">
+    <div class="quiz-player-badge">
+      <div class="quiz-player-avatar" id="quiz-avatar"></div>
+      <div class="quiz-player-name" id="quiz-pname"></div>
+    </div>
+    <div class="timer-display" id="timer-display">⏱ 00:00</div>
+    <div class="quiz-stats">
+      <div class="stat-box">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" id="stat-score">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">✅</div>
+        <div class="stat-value" id="stat-correct">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">❌</div>
+        <div class="stat-value" id="stat-wrong">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Question</div>
+        <div class="stat-value" id="stat-qnum">1</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="confirmQuit()">Quitter</button>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+  </div>
+
+  <div class="quiz-main" id="quiz-main">
+    <!-- Dynamic content -->
+  </div>
+</div>
+
+<!-- ════════════════ SCREEN: END ════════════════ -->
+<div class="screen" id="screen-end">
+  <div class="site-header">
+    <div class="logo">Verb<span>Court</span></div>
+  </div>
+
+  <div class="end-title" id="end-title">PARTIE TERMINÉE !</div>
+  <div id="end-player-badge" style="display:flex;align-items:center;gap:12px">
+    <div id="end-avatar" style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:white"></div>
+    <div id="end-pname" style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px"></div>
+  </div>
+  <div class="score-big"><span id="end-score">0</span> pts</div>
+
+  <div class="end-stats" style="width:100%">
+    <div class="end-stat">
+      <div class="end-stat-val" id="end-correct">0</div>
+      <div class="end-stat-label">✅ Corrects</div>
+    </div>
+    <div class="end-stat">
+      <div class="end-stat-val" id="end-wrong">0</div>
+      <div class="end-stat-label">❌ Ratés</div>
+    </div>
+    <div class="end-stat">
+      <div class="end-stat-val" id="end-time">00:00</div>
+      <div class="end-stat-label">⏱ Temps</div>
+    </div>
+    <div class="end-stat">
+      <div class="end-stat-val" id="end-best">0</div>
+      <div class="end-stat-label">🏆 Meilleur</div>
+    </div>
+    <div class="end-stat">
+      <div class="end-stat-val" id="end-parties">0</div>
+      <div class="end-stat-label">🎮 Parties</div>
+    </div>
+    <div class="end-stat">
+      <div class="end-stat-val" id="end-streak">0</div>
+      <div class="end-stat-label">🔥 Série</div>
+    </div>
+  </div>
+
+  <div class="weak-verbs-section" id="weak-verbs-section" style="display:none">
+    <div class="weak-verbs-title">⚠️ VERBES À RETRAVAILLER</div>
+    <div class="weak-verb-list" id="weak-verb-list"></div>
+  </div>
+
+  <div class="end-actions">
+    <button class="btn btn-primary" onclick="replayWeak()" id="btn-replay-weak" style="display:none">🔴 Rejouer les ratés</button>
+    <button class="btn btn-secondary" onclick="goToSetup()">🔄 Nouvelle partie</button>
+    <button class="btn btn-secondary" onclick="showScreen('screen-welcome')">🏠 Accueil</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// DATA — 166 IRREGULAR VERBS
+// ════════════════════════════════════════════════════
+const VERBS = [
+  {en:"Abide",past:"abode",pp:"abode",fr:"rester, tolérer",level:"hard"},
+  {en:"Arise",past:"arose",pp:"arisen",fr:"surgir, survenir",level:"hard"},
+  {en:"Awake",past:"awoke",pp:"awoken",fr:"se réveiller",level:"medium"},
+  {en:"Be",past:"was/were",pp:"been",fr:"être",level:"easy"},
+  {en:"Bear",past:"bore",pp:"borne",fr:"porter, supporter",level:"hard"},
+  {en:"Beat",past:"beat",pp:"beaten",fr:"battre, vaincre",level:"easy"},
+  {en:"Become",past:"became",pp:"become",fr:"devenir",level:"easy"},
+  {en:"Beget",past:"begot",pp:"begotten",fr:"engendrer",level:"hard"},
+  {en:"Begin",past:"began",pp:"begun",fr:"commencer",level:"easy"},
+  {en:"Bend",past:"bent",pp:"bent",fr:"plier, se courber",level:"medium"},
+  {en:"Bereave",past:"bereft",pp:"bereft",fr:"déposséder, priver",level:"hard"},
+  {en:"Bet",past:"bet",pp:"bet",fr:"parier",level:"easy"},
+  {en:"Bid",past:"bid",pp:"bid",fr:"offrir un prix, ordonner",level:"hard"},
+  {en:"Bind",past:"bound",pp:"bound",fr:"lier, relier",level:"medium"},
+  {en:"Bite",past:"bit",pp:"bitten",fr:"mordre, piquer",level:"easy"},
+  {en:"Bleed",past:"bled",pp:"bled",fr:"saigner",level:"medium"},
+  {en:"Blow",past:"blew",pp:"blown",fr:"souffler, gonfler",level:"medium"},
+  {en:"Break",past:"broke",pp:"broken",fr:"casser, briser",level:"easy"},
+  {en:"Breed",past:"bred",pp:"bred",fr:"élever des animaux",level:"medium"},
+  {en:"Bring",past:"brought",pp:"brought",fr:"apporter, amener",level:"easy"},
+  {en:"Broadcast",past:"broadcast",pp:"broadcast",fr:"diffuser, émettre",level:"medium"},
+  {en:"Build",past:"built",pp:"built",fr:"construire",level:"easy"},
+  {en:"Burn",past:"burnt",pp:"burnt",fr:"brûler",level:"easy"},
+  {en:"Burst",past:"burst",pp:"burst",fr:"éclater",level:"medium"},
+  {en:"Buy",past:"bought",pp:"bought",fr:"acheter",level:"easy"},
+  {en:"Can",past:"could",pp:"could",fr:"pouvoir",level:"easy"},
+  {en:"Cast",past:"cast",pp:"cast",fr:"jeter, distribuer",level:"medium"},
+  {en:"Catch",past:"caught",pp:"caught",fr:"attraper",level:"easy"},
+  {en:"Chide",past:"chid",pp:"chidden",fr:"gronder, réprimander",level:"hard"},
+  {en:"Choose",past:"chose",pp:"chosen",fr:"choisir",level:"easy"},
+  {en:"Cling",past:"clung",pp:"clung",fr:"s'accrocher",level:"medium"},
+  {en:"Clothe",past:"clad",pp:"clad",fr:"habiller, recouvrir",level:"hard"},
+  {en:"Come",past:"came",pp:"come",fr:"venir",level:"easy"},
+  {en:"Cost",past:"cost",pp:"cost",fr:"coûter",level:"easy"},
+  {en:"Creep",past:"crept",pp:"crept",fr:"ramper",level:"medium"},
+  {en:"Cut",past:"cut",pp:"cut",fr:"couper",level:"easy"},
+  {en:"Deal",past:"dealt",pp:"dealt",fr:"distribuer, gérer",level:"medium"},
+  {en:"Dig",past:"dug",pp:"dug",fr:"creuser",level:"medium"},
+  {en:"Dive",past:"dived/dove",pp:"dived",fr:"plonger",level:"medium"},
+  {en:"Do",past:"did",pp:"done",fr:"faire",level:"easy"},
+  {en:"Draw",past:"drew",pp:"drawn",fr:"dessiner, tirer",level:"easy"},
+  {en:"Dream",past:"dreamt",pp:"dreamt",fr:"rêver",level:"easy"},
+  {en:"Drink",past:"drank",pp:"drunk",fr:"boire",level:"easy"},
+  {en:"Drive",past:"drove",pp:"driven",fr:"conduire",level:"easy"},
+  {en:"Dwell",past:"dwelt",pp:"dwelt",fr:"habiter, résider",level:"hard"},
+  {en:"Eat",past:"ate",pp:"eaten",fr:"manger",level:"easy"},
+  {en:"Fall",past:"fell",pp:"fallen",fr:"tomber, chuter",level:"easy"},
+  {en:"Feed",past:"fed",pp:"fed",fr:"nourrir, alimenter",level:"medium"},
+  {en:"Feel",past:"felt",pp:"felt",fr:"éprouver un sentiment",level:"easy"},
+  {en:"Fight",past:"fought",pp:"fought",fr:"combattre, se battre",level:"easy"},
+  {en:"Find",past:"found",pp:"found",fr:"trouver",level:"easy"},
+  {en:"Flee",past:"fled",pp:"fled",fr:"s'enfuir, fuir",level:"medium"},
+  {en:"Fling",past:"flung",pp:"flung",fr:"jeter violemment",level:"medium"},
+  {en:"Fly",past:"flew",pp:"flown",fr:"voler dans les airs",level:"easy"},
+  {en:"Forbid",past:"forbade",pp:"forbidden",fr:"interdire",level:"medium"},
+  {en:"Forecast",past:"forecast",pp:"forecast",fr:"prévoir",level:"medium"},
+  {en:"Foresee",past:"foresaw",pp:"foreseen",fr:"prévoir, pressentir",level:"hard"},
+  {en:"Forget",past:"forgot",pp:"forgotten",fr:"oublier",level:"easy"},
+  {en:"Forgive",past:"forgave",pp:"forgiven",fr:"pardonner",level:"medium"},
+  {en:"Forsake",past:"forsook",pp:"forsaken",fr:"abandonner",level:"hard"},
+  {en:"Freeze",past:"froze",pp:"frozen",fr:"geler",level:"medium"},
+  {en:"Get",past:"got",pp:"got/gotten",fr:"obtenir, devenir",level:"easy"},
+  {en:"Give",past:"gave",pp:"given",fr:"donner",level:"easy"},
+  {en:"Go",past:"went",pp:"gone",fr:"aller",level:"easy"},
+  {en:"Grind",past:"ground",pp:"ground",fr:"moudre, broyer",level:"hard"},
+  {en:"Grow",past:"grew",pp:"grown",fr:"grandir, pousser",level:"easy"},
+  {en:"Hang",past:"hung",pp:"hung",fr:"pendre, accrocher",level:"medium"},
+  {en:"Have",past:"had",pp:"had",fr:"avoir",level:"easy"},
+  {en:"Hear",past:"heard",pp:"heard",fr:"entendre",level:"easy"},
+  {en:"Hide",past:"hid",pp:"hidden",fr:"cacher",level:"medium"},
+  {en:"Hit",past:"hit",pp:"hit",fr:"frapper, atteindre",level:"easy"},
+  {en:"Hold",past:"held",pp:"held",fr:"tenir",level:"easy"},
+  {en:"Hurt",past:"hurt",pp:"hurt",fr:"blesser, faire mal",level:"easy"},
+  {en:"Keep",past:"kept",pp:"kept",fr:"garder, maintenir",level:"easy"},
+  {en:"Kneel",past:"knelt",pp:"knelt",fr:"s'agenouiller",level:"medium"},
+  {en:"Know",past:"knew",pp:"known",fr:"connaître, savoir",level:"easy"},
+  {en:"Lay",past:"laid",pp:"laid",fr:"poser à plat, étendre",level:"medium"},
+  {en:"Lead",past:"led",pp:"led",fr:"mener, guider",level:"medium"},
+  {en:"Lean",past:"leant",pp:"leant",fr:"s'appuyer, se pencher",level:"medium"},
+  {en:"Leap",past:"leapt",pp:"leapt",fr:"sauter, bondir",level:"medium"},
+  {en:"Learn",past:"learnt",pp:"learnt",fr:"apprendre",level:"easy"},
+  {en:"Leave",past:"left",pp:"left",fr:"laisser, quitter",level:"easy"},
+  {en:"Lend",past:"lent",pp:"lent",fr:"prêter",level:"medium"},
+  {en:"Let",past:"let",pp:"let",fr:"permettre, laisser",level:"easy"},
+  {en:"Lie",past:"lay",pp:"lain",fr:"être étendu, reposer",level:"hard"},
+  {en:"Light",past:"lit",pp:"lit",fr:"allumer",level:"medium"},
+  {en:"Lose",past:"lost",pp:"lost",fr:"perdre",level:"easy"},
+  {en:"Make",past:"made",pp:"made",fr:"faire, fabriquer",level:"easy"},
+  {en:"Mean",past:"meant",pp:"meant",fr:"signifier, vouloir dire",level:"easy"},
+  {en:"Meet",past:"met",pp:"met",fr:"rencontrer",level:"easy"},
+  {en:"Mistake",past:"mistook",pp:"mistaken",fr:"se tromper, confondre",level:"medium"},
+  {en:"Mow",past:"mowed",pp:"mown",fr:"tondre le gazon",level:"hard"},
+  {en:"Offset",past:"offset",pp:"offset",fr:"compenser, contrer",level:"hard"},
+  {en:"Overcome",past:"overcame",pp:"overcome",fr:"surmonter",level:"medium"},
+  {en:"Partake",past:"partook",pp:"partaken",fr:"prendre part à",level:"hard"},
+  {en:"Pay",past:"paid",pp:"paid",fr:"payer",level:"easy"},
+  {en:"Plead",past:"pled/pleaded",pp:"pled/pleaded",fr:"supplier, plaider",level:"hard"},
+  {en:"Prove",past:"proved",pp:"proven",fr:"prouver",level:"medium"},
+  {en:"Put",past:"put",pp:"put",fr:"mettre",level:"easy"},
+  {en:"Quit",past:"quit",pp:"quit",fr:"quitter, cesser",level:"easy"},
+  {en:"Read",past:"read",pp:"read",fr:"lire",level:"easy"},
+  {en:"Relay",past:"relaid",pp:"relaid",fr:"relayer",level:"hard"},
+  {en:"Rend",past:"rent",pp:"rent",fr:"déchirer",level:"hard"},
+  {en:"Rid",past:"rid",pp:"rid",fr:"débarrasser",level:"medium"},
+  {en:"Ride",past:"rode",pp:"ridden",fr:"chevaucher, monter",level:"medium"},
+  {en:"Ring",past:"rang",pp:"rung",fr:"sonner, téléphoner",level:"medium"},
+  {en:"Rise",past:"rose",pp:"risen",fr:"s'élever, se lever",level:"medium"},
+  {en:"Run",past:"ran",pp:"run",fr:"courir",level:"easy"},
+  {en:"Saw",past:"sawed",pp:"sawn",fr:"scier",level:"hard"},
+  {en:"Say",past:"said",pp:"said",fr:"dire",level:"easy"},
+  {en:"See",past:"saw",pp:"seen",fr:"voir",level:"easy"},
+  {en:"Seek",past:"sought",pp:"sought",fr:"chercher",level:"medium"},
+  {en:"Sell",past:"sold",pp:"sold",fr:"vendre",level:"easy"},
+  {en:"Send",past:"sent",pp:"sent",fr:"envoyer",level:"easy"},
+  {en:"Set",past:"set",pp:"set",fr:"fixer, régler",level:"easy"},
+  {en:"Sew",past:"sewed",pp:"sewn",fr:"coudre",level:"medium"},
+  {en:"Shake",past:"shook",pp:"shaken",fr:"secouer, trembler",level:"medium"},
+  {en:"Shear",past:"sheared",pp:"shorn",fr:"tondre, cisailler",level:"hard"},
+  {en:"Shed",past:"shed",pp:"shed",fr:"verser, répandre, muer",level:"hard"},
+  {en:"Shine",past:"shone",pp:"shone",fr:"briller",level:"medium"},
+  {en:"Shoe",past:"shod",pp:"shod",fr:"ferrer, chausser",level:"hard"},
+  {en:"Shoot",past:"shot",pp:"shot",fr:"tirer, filmer",level:"easy"},
+  {en:"Show",past:"showed",pp:"shown",fr:"montrer, présenter",level:"easy"},
+  {en:"Shrink",past:"shrank",pp:"shrunk",fr:"rétrécir",level:"medium"},
+  {en:"Shut",past:"shut",pp:"shut",fr:"fermer",level:"easy"},
+  {en:"Sing",past:"sang",pp:"sung",fr:"chanter",level:"easy"},
+  {en:"Sink",past:"sank",pp:"sunk",fr:"couler, plonger",level:"medium"},
+  {en:"Sit",past:"sat",pp:"sat",fr:"s'asseoir",level:"easy"},
+  {en:"Slay",past:"slew",pp:"slain",fr:"tuer",level:"hard"},
+  {en:"Sleep",past:"slept",pp:"slept",fr:"dormir",level:"easy"},
+  {en:"Slide",past:"slid",pp:"slid",fr:"glisser",level:"medium"},
+  {en:"Sling",past:"slung",pp:"slung",fr:"lancer fort",level:"hard"},
+  {en:"Slink",past:"slunk",pp:"slunk",fr:"aller furtivement",level:"hard"},
+  {en:"Slit",past:"slit",pp:"slit",fr:"fendre, inciser",level:"hard"},
+  {en:"Smell",past:"smelt",pp:"smelt",fr:"sentir, flairer",level:"medium"},
+  {en:"Sow",past:"sowed",pp:"sown",fr:"semer",level:"hard"},
+  {en:"Speak",past:"spoke",pp:"spoken",fr:"parler",level:"easy"},
+  {en:"Speed",past:"sped",pp:"sped",fr:"aller très vite",level:"medium"},
+  {en:"Spell",past:"spelt",pp:"spelt",fr:"épeler, orthographier",level:"medium"},
+  {en:"Spend",past:"spent",pp:"spent",fr:"dépenser, passer du temps",level:"easy"},
+  {en:"Spill",past:"spilt",pp:"spilt",fr:"renverser un liquide",level:"medium"},
+  {en:"Spin",past:"spun",pp:"spun",fr:"faire tourner, filer",level:"medium"},
+  {en:"Spit",past:"spat",pp:"spat",fr:"cracher",level:"medium"},
+  {en:"Split",past:"split",pp:"split",fr:"fendre, diviser",level:"medium"},
+  {en:"Spoil",past:"spoilt",pp:"spoilt",fr:"gâcher, gâter",level:"medium"},
+  {en:"Spread",past:"spread",pp:"spread",fr:"répandre, étaler",level:"medium"},
+  {en:"Spring",past:"sprang",pp:"sprung",fr:"jaillir, bondir",level:"hard"},
+  {en:"Stand",past:"stood",pp:"stood",fr:"être debout",level:"easy"},
+  {en:"Steal",past:"stole",pp:"stolen",fr:"voler, dérober",level:"easy"},
+  {en:"Stick",past:"stuck",pp:"stuck",fr:"coller, se coincer",level:"medium"},
+  {en:"Sting",past:"stung",pp:"stung",fr:"piquer",level:"medium"},
+  {en:"Stink",past:"stank",pp:"stunk",fr:"puer",level:"medium"},
+  {en:"Stride",past:"strode",pp:"stridden",fr:"marcher à grands pas",level:"hard"},
+  {en:"Strike",past:"struck",pp:"struck",fr:"frapper, conclure",level:"medium"},
+  {en:"String",past:"strung",pp:"strung",fr:"ficeler, enfiler",level:"hard"},
+  {en:"Strive",past:"strove",pp:"striven",fr:"s'efforcer, lutter",level:"hard"},
+  {en:"Swear",past:"swore",pp:"sworn",fr:"jurer",level:"medium"},
+  {en:"Sweep",past:"swept",pp:"swept",fr:"balayer",level:"medium"},
+  {en:"Swell",past:"swelled",pp:"swollen",fr:"gonfler, enfler",level:"medium"},
+  {en:"Swim",past:"swam",pp:"swum",fr:"nager",level:"easy"},
+  {en:"Swing",past:"swung",pp:"swung",fr:"se balancer",level:"medium"},
+  {en:"Take",past:"took",pp:"taken",fr:"prendre",level:"easy"},
+  {en:"Teach",past:"taught",pp:"taught",fr:"enseigner",level:"easy"},
+  {en:"Tear",past:"tore",pp:"torn",fr:"déchirer",level:"medium"},
+  {en:"Tell",past:"told",pp:"told",fr:"dire, raconter",level:"easy"},
+  {en:"Think",past:"thought",pp:"thought",fr:"penser",level:"easy"},
+  {en:"Throw",past:"threw",pp:"thrown",fr:"jeter, lancer",level:"easy"},
+  {en:"Thrust",past:"thrust",pp:"thrust",fr:"enfoncer",level:"hard"},
+  {en:"Tread",past:"trod",pp:"trodden",fr:"piétiner, marcher",level:"hard"},
+  {en:"Undertake",past:"undertook",pp:"undertaken",fr:"entreprendre",level:"hard"},
+  {en:"Undergo",past:"underwent",pp:"undergone",fr:"subir",level:"hard"},
+  {en:"Understand",past:"understood",pp:"understood",fr:"comprendre",level:"easy"},
+  {en:"Wake",past:"woke",pp:"woken",fr:"se réveiller, réveiller",level:"easy"},
+  {en:"Wear",past:"wore",pp:"worn",fr:"porter des habits",level:"easy"},
+  {en:"Weave",past:"wove",pp:"woven",fr:"tisser",level:"hard"},
+  {en:"Weep",past:"wept",pp:"wept",fr:"pleurer",level:"medium"},
+  {en:"Win",past:"won",pp:"won",fr:"gagner",level:"easy"},
+  {en:"Wind",past:"wound",pp:"wound",fr:"enrouler, remonter",level:"hard"},
+  {en:"Withdraw",past:"withdrew",pp:"withdrawn",fr:"se retirer, ôter",level:"hard"},
+  {en:"Wring",past:"wrung",pp:"wrung",fr:"tordre",level:"hard"},
+  {en:"Write",past:"wrote",pp:"written",fr:"écrire",level:"easy"},
+];
+
+const SCHOOL_EASY = ["Be","Beat","Become","Begin","Bite","Blow","Break","Bring","Build","Buy","Can","Catch","Choose","Come","Cost","Cut","Do","Draw","Dream","Drink","Drive","Eat","Fall","Feel","Fight","Find","Fly","Get","Give","Go","Grow","Have","Hear","Hit","Hold","Hurt","Keep","Know","Learn","Leave","Lose","Make","Mean","Meet","Pay","Put","Quit","Read","Run","Say","See","Sell","Send","Set","Shoot","Show","Shut","Sing","Sit","Sleep","Speak","Spend","Stand","Steal","Swim","Take","Teach","Tell","Think","Throw","Understand","Wake","Wear","Win","Write"];
+const SCHOOL_MED = ["Bend","Bet","Bleed","Breed","Broadcast","Burst","Cast","Cling","Creep","Deal","Dig","Dive","Feed","Flee","Fling","Forbid","Forgive","Freeze","Hang","Hide","Kneel","Lay","Lead","Lean","Leap","Lend","Let","Light","Overcome","Prove","Rid","Ride","Ring","Rise","Seek","Shake","Shine","Sink","Slide","Smell","Speed","Spell","Spin","Split","Spoil","Spread","Stick","Sting","Stink","Strike","Swear","Sweep","Swell","Swing","Tear","Weep","Wind"];
+
+const COLORS = ["#F76C00","#E53935","#4CAF50","#2196F3","#9C27B0"];
+const COLOR_NAMES = ["Orange","Rouge","Vert","Bleu","Violet"];
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+let state = {
+  players: [],
+  activePlayer: null,
+  settings: { type:'selection', direction:'en-fr', count:15, verbmode:'my' },
+  selectedVerbs: [],
+  quiz: { verbs:[], idx:0, score:0, correct:0, wrong:0, streak:0, maxStreak:0, errors:{}, startTime:null, timerInterval:null },
+  newPlayerColor: 0,
+};
+
+// ════════════════════════════════════════════════════
+// STORAGE
+// ════════════════════════════════════════════════════
+function save() { localStorage.setItem('verbcourt', JSON.stringify({ players: state.players, selectedVerbs: state.selectedVerbs })); }
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('verbcourt') || '{}');
+    state.players = d.players || [];
+    state.selectedVerbs = d.selectedVerbs || VERBS.filter(v => v.level === 'easy').map(v => v.en);
+  } catch { state.players = []; state.selectedVerbs = []; }
+}
+
+// ════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════
+function showModal(title, content, actions) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-content').innerHTML = content;
+  const ac = document.getElementById('modal-actions');
+  ac.innerHTML = '';
+  actions.forEach(a => {
+    const b = document.createElement('button');
+    b.className = `btn ${a.cls || 'btn-secondary'}`;
+    b.textContent = a.label;
+    b.onclick = () => { closeModal(); a.fn(); };
+    ac.appendChild(b);
+  });
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+// ════════════════════════════════════════════════════
+// PLAYERS
+// ════════════════════════════════════════════════════
+function renderPlayers() {
+  const grid = document.getElementById('players-grid');
+  grid.innerHTML = '';
+  state.players.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = `player-card${state.activePlayer === i ? ' active-player' : ''}`;
+    const best = p.history ? Math.max(0, ...p.history.map(h => h.score)) : 0;
+    card.innerHTML = `
+      <div class="player-avatar" style="background:${COLORS[p.color]}">${p.name[0].toUpperCase()}</div>
+      <div class="player-name">${p.name}</div>
+      <div class="player-score-display">🏆 ${best} pts</div>
+      <div class="player-best">🎮 ${(p.history||[]).length} parties</div>
+    `;
+    card.onclick = () => selectPlayer(i);
+    grid.appendChild(card);
+  });
+  if (state.players.length < 5) {
+    const add = document.createElement('div');
+    add.className = 'add-player-btn';
+    add.innerHTML = '+<div style="font-size:11px;color:var(--gray);font-family:\'Barlow\',sans-serif;margin-top:2px">Joueur</div>';
+    add.onclick = showAddPlayerForm;
+    grid.appendChild(add);
+  }
+  document.getElementById('player-select-hint').style.display = state.players.length > 0 ? 'block' : 'none';
+  const btnPlay = document.getElementById('btn-play');
+  btnPlay.style.opacity = state.activePlayer !== null ? '1' : '0.4';
+  btnPlay.style.pointerEvents = state.activePlayer !== null ? 'auto' : 'none';
+}
+
+function selectPlayer(i) {
+  state.activePlayer = i;
+  renderPlayers();
+  showToast(`👋 Joueur : ${state.players[i].name}`);
+}
+
+function showAddPlayerForm() {
+  document.getElementById('add-player-form').style.display = 'block';
+  document.getElementById('new-player-name').value = '';
+  document.getElementById('new-player-name').focus();
+  const co = document.getElementById('color-options');
+  co.innerHTML = '';
+  COLORS.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.className = `color-dot${i === state.newPlayerColor ? ' selected' : ''}`;
+    d.style.background = c;
+    d.onclick = () => { state.newPlayerColor = i; document.querySelectorAll('.color-dot').forEach((x,j) => x.classList.toggle('selected', j===i)); };
+    co.appendChild(d);
+  });
+}
+function cancelAddPlayer() { document.getElementById('add-player-form').style.display = 'none'; }
+function saveNewPlayer() {
+  const name = document.getElementById('new-player-name').value.trim();
+  if (!name) { showToast('Entre un prénom !'); return; }
+  state.players.push({ name, color: state.newPlayerColor, history: [] });
+  state.activePlayer = state.players.length - 1;
+  save(); cancelAddPlayer(); renderPlayers();
+  showToast(`✅ ${name} ajouté !`);
+}
+
+// ════════════════════════════════════════════════════
+// SETUP
+// ════════════════════════════════════════════════════
+function goToSetup() {
+  if (state.activePlayer === null) { showToast('Sélectionne un joueur !'); return; }
+  renderVerbGrid();
+  showScreen('screen-setup');
+}
+
+function selectOption(btn) {
+  const group = btn.dataset.group;
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.settings[group] = btn.dataset.val;
+  if (group === 'type') {
+    document.getElementById('direction-card').style.display = btn.dataset.val === 'selection' ? 'block' : 'none';
+  }
+  if (group === 'verbmode') {
+    document.getElementById('verb-selector-card').style.display = btn.dataset.val === 'my' ? 'block' : 'none';
+  }
+}
+
+function renderVerbGrid(filter = '') {
+  const grid = document.getElementById('verb-grid');
+  grid.innerHTML = '';
+  const q = filter.toLowerCase();
+  VERBS.forEach(v => {
+    if (q && !v.en.toLowerCase().includes(q) && !v.fr.toLowerCase().includes(q)) return;
+    const chip = document.createElement('div');
+    chip.className = `verb-chip${state.selectedVerbs.includes(v.en) ? ' selected' : ''}`;
+    chip.innerHTML = `<div class="level-dot ${v.level}"></div><div><div class="verb-en">${v.en}</div><div class="verb-fr">${v.fr}</div></div>`;
+    chip.onclick = () => toggleVerb(v.en, chip);
+    grid.appendChild(chip);
+  });
+  updateSelectedCount();
+}
+
+function filterVerbs() { renderVerbGrid(document.getElementById('verb-search').value); }
+
+function toggleVerb(en, chip) {
+  const idx = state.selectedVerbs.indexOf(en);
+  if (idx === -1) { state.selectedVerbs.push(en); chip.classList.add('selected'); }
+  else { state.selectedVerbs.splice(idx, 1); chip.classList.remove('selected'); }
+  save(); updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  document.getElementById('selected-count').textContent = `${state.selectedVerbs.length} verbe(s) sélectionné(s)`;
+}
+function selectAllVerbs() { state.selectedVerbs = VERBS.map(v => v.en); save(); renderVerbGrid(document.getElementById('verb-search').value); }
+function deselectAllVerbs() { state.selectedVerbs = []; save(); renderVerbGrid(document.getElementById('verb-search').value); }
+function selectByLevel(lvl) {
+  VERBS.filter(v => v.level === lvl).forEach(v => { if (!state.selectedVerbs.includes(v.en)) state.selectedVerbs.push(v.en); });
+  save(); renderVerbGrid(document.getElementById('verb-search').value);
+}
+
+// ════════════════════════════════════════════════════
+// QUIZ ENGINE
+// ════════════════════════════════════════════════════
+function getVerbPool() {
+  const mode = state.settings.verbmode;
+  const p = state.players[state.activePlayer];
+  if (mode === 'my') return VERBS.filter(v => state.selectedVerbs.includes(v.en));
+  if (mode === 'school-easy') return VERBS.filter(v => SCHOOL_EASY.includes(v.en));
+  if (mode === 'school-med') return VERBS.filter(v => SCHOOL_MED.includes(v.en));
+  if (mode === 'weak') {
+    const errors = p.globalErrors || {};
+    const weakKeys = Object.keys(errors).filter(k => errors[k] > 0);
+    if (weakKeys.length === 0) return VERBS;
+    return VERBS.filter(v => weakKeys.includes(v.en));
+  }
+  return VERBS; // random
+}
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function startQuiz() {
+  const pool = getVerbPool();
+  const count = parseInt(state.settings.count);
+  if (pool.length < 4) { showToast('Sélectionne au moins 4 verbes !'); return; }
+  const quizVerbs = shuffle(pool).slice(0, Math.min(count, pool.length));
+  state.quiz = {
+    verbs: quizVerbs, idx: 0, score: 0, correct: 0, wrong: 0,
+    streak: 0, maxStreak: 0, errors: {}, startTime: Date.now(), timerInterval: null, answered: false
+  };
+  const p = state.players[state.activePlayer];
+  const avatar = document.getElementById('quiz-avatar');
+  avatar.style.background = COLORS[p.color];
+  avatar.textContent = p.name[0].toUpperCase();
+  document.getElementById('quiz-pname').textContent = p.name;
+  showScreen('screen-quiz');
+  startTimer();
+  renderQuestion();
+}
+
+function startTimer() {
+  state.quiz.timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - state.quiz.startTime) / 1000);
+    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    document.getElementById('timer-display').textContent = `⏱ ${m}:${s}`;
+  }, 1000);
+}
+
+function updateTopBar() {
+  document.getElementById('stat-score').textContent = state.quiz.score;
+  document.getElementById('stat-correct').textContent = state.quiz.correct;
+  document.getElementById('stat-wrong').textContent = state.quiz.wrong;
+  document.getElementById('stat-qnum').textContent = `${state.quiz.idx + 1}/${state.quiz.verbs.length}`;
+  const pct = (state.quiz.idx / state.quiz.verbs.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function renderQuestion() {
+  state.quiz.answered = false;
+  updateTopBar();
+  const verb = state.quiz.verbs[state.quiz.idx];
+  const main = document.getElementById('quiz-main');
+  main.innerHTML = '';
+
+  const counter = document.createElement('div');
+  counter.className = 'question-counter';
+  counter.textContent = `QUESTION ${state.quiz.idx + 1} / ${state.quiz.verbs.length}`;
+  main.appendChild(counter);
+
+  if (state.settings.type === 'selection') renderSelection(main, verb);
+  else renderFill(main, verb);
+}
+
+function getDirection(verb) {
+  const d = state.settings.direction;
+  if (d === 'both') return Math.random() < 0.5 ? 'en-fr' : 'fr-en';
+  return d;
+}
+
+function renderSelection(main, verb) {
+  const dir = getDirection(verb);
+  const qCard = document.createElement('div');
+  qCard.className = 'question-card';
+
+  const badge = document.createElement('div');
+  badge.className = 'question-type-badge';
+  badge.textContent = dir === 'en-fr' ? '🇬🇧 ANGLAIS → 🇫🇷 FRANÇAIS' : '🇫🇷 FRANÇAIS → 🇬🇧 ANGLAIS';
+  qCard.appendChild(badge);
+
+  const vEl = document.createElement('div');
+  vEl.className = 'question-verb';
+  vEl.textContent = dir === 'en-fr' ? verb.en : verb.fr;
+  qCard.appendChild(vEl);
+
+  if (dir === 'en-fr') {
+    const hint = document.createElement('div');
+    hint.className = 'question-hint';
+    hint.textContent = `${verb.past} / ${verb.pp}`;
+    qCard.appendChild(hint);
+  }
+  main.appendChild(qCard);
+
+  // Generate 4 options
+  const correctAns = dir === 'en-fr' ? verb.fr : verb.en;
+  const pool = VERBS.filter(v => v.en !== verb.en);
+  const wrongs = shuffle(pool).slice(0, 3).map(v => dir === 'en-fr' ? v.fr : v.en);
+  const options = shuffle([correctAns, ...wrongs]);
+
+  const grid = document.createElement('div');
+  grid.className = 'answers-grid';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.textContent = opt;
+    btn.onclick = () => checkSelection(btn, opt, correctAns, grid, verb);
+    grid.appendChild(btn);
+  });
+  main.appendChild(grid);
+
+  const feedback = document.createElement('div');
+  feedback.className = 'feedback-banner';
+  feedback.id = 'feedback';
+  main.appendChild(feedback);
+}
+
+function checkSelection(btn, chosen, correct, grid, verb) {
+  if (state.quiz.answered) return;
+  state.quiz.answered = true;
+  const isCorrect = chosen === correct;
+
+  grid.querySelectorAll('.answer-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correct) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.textContent = '🎯 PARFAIT ! +2 pts';
+    fb.className = 'feedback-banner correct show';
+    state.quiz.score += 2; state.quiz.correct++;
+    state.quiz.streak++; if (state.quiz.streak > state.quiz.maxStreak) state.quiz.maxStreak = state.quiz.streak;
+    shootBall(true);
+  } else {
+    fb.textContent = `❌ RATÉ — La réponse : ${correct}`;
+    fb.className = 'feedback-banner wrong show';
+    state.quiz.score -= 1; state.quiz.wrong++;
+    state.quiz.streak = 0;
+    state.quiz.errors[verb.en] = (state.quiz.errors[verb.en] || 0) + 1;
+    shootBall(false);
+  }
+  updateTopBar();
+
+  const actions = document.createElement('div');
+  actions.className = 'quiz-actions';
+  actions.style.marginTop = '12px';
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-primary';
+  nextBtn.textContent = state.quiz.idx < state.quiz.verbs.length - 1 ? '▶ SUIVANT' : '🏁 RÉSULTATS';
+  nextBtn.onclick = nextQuestion;
+  actions.appendChild(nextBtn);
+  document.getElementById('quiz-main').appendChild(actions);
+}
+
+function renderFill(main, verb) {
+  const qCard = document.createElement('div');
+  qCard.className = 'question-card';
+  const badge = document.createElement('div');
+  badge.className = 'question-type-badge';
+  badge.textContent = '✏️ COMPLÈTE LES FORMES VERBALES';
+  qCard.appendChild(badge);
+  const vEl = document.createElement('div');
+  vEl.className = 'question-verb';
+  vEl.style.fontSize = '32px';
+  vEl.textContent = verb.fr.toUpperCase();
+  qCard.appendChild(vEl);
+  main.appendChild(qCard);
+
+  const fillDiv = document.createElement('div');
+  fillDiv.className = 'fill-blanks';
+
+  const fields = [
+    { label: 'Base verbale (EN)', key: 'en', correct: verb.en },
+    { label: 'Prétérit (PAST)', key: 'past', correct: verb.past },
+    { label: 'Participe passé (PP)', key: 'pp', correct: verb.pp },
+  ];
+
+  fields.forEach(f => {
+    const fd = document.createElement('div');
+    fd.className = 'fill-field';
+    fd.innerHTML = `<div class="fill-label">${f.label}</div>
+      <input class="fill-input" type="text" placeholder="..." data-key="${f.key}" data-correct="${f.correct}">
+      <div class="fill-correct-answer" id="ans-${f.key}"></div>`;
+    fillDiv.appendChild(fd);
+  });
+  main.appendChild(fillDiv);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback-banner';
+  fb.id = 'feedback';
+  main.appendChild(fb);
+
+  const actions = document.createElement('div');
+  actions.className = 'quiz-actions';
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'btn btn-primary';
+  checkBtn.textContent = '✓ VALIDER';
+  checkBtn.onclick = () => checkFill(verb, fields);
+  actions.appendChild(checkBtn);
+  main.appendChild(actions);
+
+  // Enter key
+  fillDiv.querySelectorAll('.fill-input').forEach((inp, i, arr) => {
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { if (i < arr.length - 1) arr[i+1].focus(); else checkFill(verb, fields); } });
+  });
+  setTimeout(() => { const first = fillDiv.querySelector('.fill-input'); if (first) first.focus(); }, 100);
+}
+
+function normalize(s) { return s.toLowerCase().trim().replace(/\s+/g,' '); }
+
+function checkFill(verb, fields) {
+  if (state.quiz.answered) return;
+  state.quiz.answered = true;
+  let goodCount = 0;
+
+  fields.forEach(f => {
+    const inp = document.querySelector(`[data-key="${f.key}"]`);
+    const ansEl = document.getElementById(`ans-${f.key}`);
+    const userVal = normalize(inp.value);
+    const correctVals = f.correct.split('/').map(x => normalize(x.trim()));
+    const ok = correctVals.some(c => userVal === c || c.includes(userVal) && userVal.length > 2);
+    inp.disabled = true;
+    if (ok) { inp.classList.add('correct'); goodCount++; ansEl.textContent = '✅'; }
+    else { inp.classList.add('wrong'); ansEl.textContent = `→ ${f.correct}`; }
+  });
+
+  let pts = 0;
+  const fb = document.getElementById('feedback');
+  if (goodCount === 3) {
+    pts = 2; fb.textContent = '🎯 PARFAIT ! +2 pts'; fb.className = 'feedback-banner correct show';
+    state.quiz.correct++; state.quiz.streak++;
+    if (state.quiz.streak > state.quiz.maxStreak) state.quiz.maxStreak = state.quiz.streak;
+    shootBall(true);
+  } else if (goodCount === 2) {
+    pts = 1; fb.textContent = '👍 PRESQUE ! +1 pt'; fb.className = 'feedback-banner correct show';
+    state.quiz.correct++; state.quiz.streak = 0;
+    state.quiz.errors[verb.en] = (state.quiz.errors[verb.en] || 0) + 1;
+  } else if (goodCount === 1) {
+    pts = 0; fb.textContent = '😬 UNE SEULE BONNE ! 0 pt'; fb.className = 'feedback-banner wrong show';
+    state.quiz.wrong++; state.quiz.streak = 0;
+    state.quiz.errors[verb.en] = (state.quiz.errors[verb.en] || 0) + 2;
+    shootBall(false);
+  } else {
+    pts = -1; fb.textContent = '❌ RATÉ ! -1 pt'; fb.className = 'feedback-banner wrong show';
+    state.quiz.wrong++; state.quiz.streak = 0;
+    state.quiz.errors[verb.en] = (state.quiz.errors[verb.en] || 0) + 2;
+    shootBall(false);
+  }
+  state.quiz.score += pts;
+  updateTopBar();
+
+  const existingActions = document.querySelector('.quiz-actions');
+  if (existingActions) existingActions.remove();
+  const actions = document.createElement('div');
+  actions.className = 'quiz-actions';
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-primary';
+  nextBtn.textContent = state.quiz.idx < state.quiz.verbs.length - 1 ? '▶ SUIVANT' : '🏁 RÉSULTATS';
+  nextBtn.onclick = nextQuestion;
+  actions.appendChild(nextBtn);
+  document.getElementById('quiz-main').appendChild(actions);
+}
+
+function nextQuestion() {
+  state.quiz.idx++;
+  if (state.quiz.idx >= state.quiz.verbs.length) endQuiz();
+  else renderQuestion();
+}
+
+// ════════════════════════════════════════════════════
+// BALL ANIMATION
+// ════════════════════════════════════════════════════
+function shootBall(success) {
+  const ball = document.getElementById('ball');
+  const hoop = document.getElementById('hoopEl');
+  const hoopRect = hoop.getBoundingClientRect();
+  ball.style.left = (window.innerWidth / 2 - 20) + 'px';
+  ball.style.top = (window.innerHeight - 80) + 'px';
+  ball.className = 'ball ' + (success ? 'shoot' : 'miss');
+  setTimeout(() => { ball.className = 'ball'; }, 1000);
+}
+
+// ════════════════════════════════════════════════════
+// END QUIZ
+// ════════════════════════════════════════════════════
+function endQuiz() {
+  clearInterval(state.quiz.timerInterval);
+  const elapsed = Math.floor((Date.now() - state.quiz.startTime) / 1000);
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  const timeStr = `${m}:${s}`;
+
+  const p = state.players[state.activePlayer];
+  if (!p.history) p.history = [];
+  if (!p.globalErrors) p.globalErrors = {};
+
+  // Update global errors
+  Object.keys(state.quiz.errors).forEach(k => {
+    p.globalErrors[k] = (p.globalErrors[k] || 0) + state.quiz.errors[k];
+  });
+
+  // Add to history (keep last 5)
+  p.history.push({ score: state.quiz.score, correct: state.quiz.correct, wrong: state.quiz.wrong, time: timeStr, date: new Date().toLocaleDateString('fr-FR') });
+  if (p.history.length > 5) p.history.shift();
+  save();
+
+  const best = Math.max(0, ...p.history.map(h => h.score));
+
+  // Fill end screen
+  const endAvatar = document.getElementById('end-avatar');
+  endAvatar.style.background = COLORS[p.color];
+  endAvatar.textContent = p.name[0].toUpperCase();
+  document.getElementById('end-pname').textContent = p.name;
+
+  const score = state.quiz.score;
+  document.getElementById('end-title').textContent = score >= state.quiz.verbs.length * 1.5 ? '🏆 EXCELLENT !' : score > 0 ? '💪 BIEN JOUÉ !' : '😅 À RETRAVAILLER !';
+  document.getElementById('end-score').textContent = score;
+  document.getElementById('end-correct').textContent = state.quiz.correct;
+  document.getElementById('end-wrong').textContent = state.quiz.wrong;
+  document.getElementById('end-time').textContent = timeStr;
+  document.getElementById('end-best').textContent = best;
+  document.getElementById('end-parties').textContent = p.history.length;
+  document.getElementById('end-streak').textContent = state.quiz.maxStreak;
+
+  // Weak verbs
+  const weakSection = document.getElementById('weak-verbs-section');
+  const weakList = document.getElementById('weak-verb-list');
+  const weakVerbs = Object.keys(state.quiz.errors).map(k => ({ ...VERBS.find(v => v.en === k), errors: state.quiz.errors[k] })).sort((a,b) => b.errors - a.errors);
+
+  if (weakVerbs.length > 0) {
+    weakSection.style.display = 'block';
+    weakList.innerHTML = '';
+    weakVerbs.forEach(v => {
+      const row = document.createElement('div');
+      row.className = 'weak-verb-item';
+      row.innerHTML = `
+        <div class="en">${v.en}</div>
+        <div class="fr">${v.past} / ${v.pp}</div>
+        <div class="fr" style="color:var(--gray)">${v.fr}</div>
+        <div class="times">❌ ${v.errors} erreur(s)</div>
+      `;
+      weakList.appendChild(row);
+    });
+    document.getElementById('btn-replay-weak').style.display = 'block';
+  } else {
+    weakSection.style.display = 'none';
+    document.getElementById('btn-replay-weak').style.display = 'none';
+  }
+
+  showScreen('screen-end');
+}
+
+function replayWeak() {
+  state.settings.verbmode = 'weak';
+  document.querySelectorAll('[data-group="verbmode"]').forEach(b => b.classList.toggle('selected', b.dataset.val === 'weak'));
+  startQuiz();
+}
+
+function confirmQuit() {
+  showModal('QUITTER ?', 'La partie en cours sera perdue.', [
+    { label: 'Continuer', cls: 'btn-primary', fn: () => {} },
+    { label: 'Quitter', cls: 'btn-danger', fn: () => { clearInterval(state.quiz.timerInterval); showScreen('screen-welcome'); } }
+  ]);
+}
+
+// ════════════════════════════════════════════════════
+// SCOREBOARD
+// ════════════════════════════════════════════════════
+function showScoreboard() {
+  const sorted = [...state.players].sort((a, b) => {
+    const bA = Math.max(0, ...(a.history||[]).map(h => h.score));
+    const bB = Math.max(0, ...(b.history||[]).map(h => h.score));
+    return bB - bA;
+  });
+  const content = sorted.map((p, i) => {
+    const best = Math.max(0, ...(p.history||[]).map(h => h.score));
+    const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    return `<div style="display:flex;align-items:center;gap:14px;background:var(--dark2);border:2px solid var(--dark3);border-radius:10px;padding:12px 16px;margin-bottom:8px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:${i===0?'#FFD600':i===1?'#B0BEC5':i===2?'#A1632A':'var(--gray)'};width:24px">${i+1}</div>
+      <div style="width:36px;height:36px;border-radius:50%;background:${COLORS[p.color]};display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:white">${p.name[0]}</div>
+      <div style="flex:1">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px">${p.name}</div>
+        <div style="font-size:12px;color:var(--gray)">${(p.history||[]).length} parties</div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--orange)">${best} pts</div>
+    </div>`;
+  }).join('');
+  showModal('🏆 CLASSEMENT', content || '<p>Aucune partie jouée.</p>', [{ label: 'Fermer', fn: () => {} }]);
+}
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+load();
+renderPlayers();
+</script>
+</body>
+</html>
